@@ -1,0 +1,92 @@
+author_name:
+    type: str
+    help: What is your name?
+    
+author_email:
+    type: str
+    help: What is your email?
+    
+rights_owner:
+    type: str
+    help: What name should we use for relevant rights? For example, if the rights holder is a company, include that here.
+    default: {{ author_name }}
+    
+security_email:
+    type: str
+    help: What email should people use to notify you about security issues?
+    default: {{ author_email }}
+    
+gh_username:
+    type: str
+    help: What is your Github username? (Leave blank if you are not using Github for this project.)
+
+project_name: 
+    type: str
+    help: What is you project name?
+    
+project_description:
+    type: str
+    help: Provide a short description for the project.
+    multiline: true
+    
+project_slug:
+    type: str
+    help: What should we use as a slug for your project?
+    default: "{{ project_name.lower()|replace(' ', '-')|replace('_', '-')}}"
+
+package_name:
+    type: str
+    help: What should we name the module?
+    default: "{{ project_name.lower()|replace(' ', '_')|replace('-', '_')}}"
+    
+license:
+    type: str
+    help: What license do you want to release this under?
+    choices:
+        Not Open Source: Proprietary
+        MIT: MIT
+        BSD: BSD-3-Clause
+        Apache: Apache-2.0
+        GPL3 or later: GPL-3.0-or-later
+        LGPL3 or later: LGPL-3.0-or-later
+        AGPL: AGPL-3.0-or-later
+        Anti-Capitalist: anticap
+        Unlicense/Public Domain: Unlicense
+        Decide Later: Undefined
+    default: BSD-3-Clause
+        
+include_coc:
+    type: bool
+    help: Include a template Code of Conduct?
+    default: true
+
+use_ga:
+    type: bool
+    help: Should we create workflows for Github Actions? (Requires Github username)
+    default: false
+    validator: "{% if not gh_username and use_ga %}You cannot generate Github Actions without providing a Github username.{% endif %}"
+
+use_precommit:
+    type: bool
+    help: Do you want to use pre-commit? (Recommended)
+    default: true
+    
+include_license_text:
+    type: bool
+    help: Include additional license text in header of every code file? (Requires precommit.)
+    default: false
+    validator: "{% if not use_precommit and include_license_text %}We cannot automatically add license text to each file without precommit.{% endif %}{% if license in ['Undefined', 'Anti-Capitalist'] %}Your selected license is not compatible for license text insertion in code files.{% endif %}"
+
+use_coveralls:
+    type: bool
+    help: Do you want to use coveralls? (Requires Github Actions)
+    default: false
+    validator: "{% if not use_ga and use_coveralls %}Configuring coveralls outside of Github Actions is not supported.{% endif %}"
+    
+_jinja_extensions:
+    - jinja2_time.TimeExtension
+
+_tasks:
+    - "git init"
+    - "{% if use_precommit %}pre-commit install{% else %}echo 'Skipping pre-commit step{% endif %}"
+    - "{% if use_just %}just bootstrap{% else %}rye sync{% endif %}"
