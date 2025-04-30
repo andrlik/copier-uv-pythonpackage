@@ -1,0 +1,242 @@
+[project]
+name = "{{ project-slug }}"
+version = "0.1.0"
+description = """{{ project_description }}"""
+authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
+{% if license not in ["anticap", "Undefined"] -%}license = "{{ license }}"{% endif -%}
+readme = "README.md"
+requires-python = ">={% if '3.12' in python_versions %}3.12{% else %}3.13"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    {% if license and license != "anticap" and license != "Undefined" -%}"License :: {% if license == 'Proprietary' %}Other/Proprietary License{% else %}OSI Approved :: {% if license == 'BSD-3-Clause' %}BSD License{% elif license == 'MIT' %}MIT License{% elif license == 'Apache-2.0' %}Apache Software License{% elif license == 'Unlicense' %}The Unlicense (Unlicense){% elif license == 'GPL-3.0-or-later' %}GNU Lesser General Public License v3 or later (LGPLv3+){% elif license == 'LGPL-3.0-or-later' %}GNU Lesser General Public License v2 or later (LGPLv2+){% elif license == 'AGPL-3.0-or-later' %}GNU Affero General Public License v3 or later (AGPLv3+){% endif %}",{% endif %}
+    {% if python_versions -%}{% for version in python_versions -%}
+    "Programming Language :: Python :: {{ version }}",
+    {% endfor %}
+]
+{% if gh_username -%}
+[project.urls]
+Repository = "https://github.com/{{ gh_username }}/{{ project_slug }}"
+Homepage = "https://github.com/{{ gh_username }}/{{ project_slug }}"
+Documentation = "https://{{ gh_username }}.github.io/{{ project_slug }}/"
+{% endif %}
+
+[dependency-groups]
+dev = [
+    "pytest-cov",
+    "pytest-sugar",
+    "bandit[toml]",
+    "pyright",
+    "mkdocs-material",
+    "mkdocs-literate-nav",
+    "mkdocs-gen-files",
+    "markdown-extensions",
+    "mkdocs-include-markdown-plugin",
+    "mkdocstrings[python]",
+    "mike",
+    "bump-my-version"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/{{ package_name }}"]
+
+[tool.hatch.build.targets.sdist]
+packages = ["src/{{ package_name }}", "tests"]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+testpaths = ["tests", "src/{{package_name}}"]
+norecursedirs = ["hooks", "*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__", ".venv"]
+doctest_optionflags = ["NUMBER", "NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL"]
+
+addopts = [
+    "--strict-markers",
+      "--tb=short",
+      "--doctest-modules",
+      "--doctest-continue-on-failure",
+      "--cov=src/{{package_name}}",
+      "--cov-report=term-missing",
+]
+
+[tool.coverage.run]
+source = ["src/{{package_name}}"]
+omit = ["*tests*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "no cov",
+    "if __name__ == __main__:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.check-wheel-contents]
+ignore = ["W004"]
+
+[tool.ruff]
+target-version = "{% if "3.12" in python_versions %}py312{% else %}py313{% endif %}"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+  "A",
+  "ARG",
+  "B",
+  "C",
+  "DJ",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105",
+  "S106",
+  "S107",
+  # Ignore complexity
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+  "DJ001",
+  "RUF012",
+  "ISC001",
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["S101", "FBT001", "ARG001", "ARG002", "E501", "PLR2004", "T201"]
+"conftest.py" = ["ARG001"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{ package_name }}"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.black]
+target-version = ["{% if '3.12' in python_versions %}py312{% else %}py313{% endif %}"]
+line-length = 88
+color = true
+
+exclude = '''
+/(
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | migrations
+    | buck-out
+    | build
+    | dist
+    | env
+    | venv
+)/
+'''
+
+[tool.pyright]
+pythonVersion = "{% if '3.12' in python_versions %}3.12{% else %}3.13{% endif %}"
+exclude = [
+    "**/__pycache__",
+    ".venv",
+    ".tox",
+    "tests",
+]
+# reportIncompatibleVariableOverride = false
+# reportIncompatibleMethodOverride = false
+
+[tool.tox]
+env_list = [{% for version in python_versions %}"{{ version }}", {% endfor %} "lint", "types"]
+
+[tool.tox.env_run_base]
+description = "Run tests under {base_python}"
+allowlist_externals = ["{change_dir}/.tox/{base_python}/bin/python"]
+runner = "uv-venv-lock-runner"
+with_dev = true
+commands = [["pytest"]]
+
+[tool.tox.env.lint]
+description = "Run linting via ruff"
+skip_install = true
+allowlist_externals = ["{change_dir}/.tox/{base_python}/bin/python"]
+with_dev = true
+runner = "uv-venv-lock-runner"
+commands = [["ruff", "check"]]
+
+[tool.tox.env.types]
+description = "Run type checks via pyright"
+allowlist_externals = ["{change_dir}/.tox/{base_python}/bin/python"]
+runner = "uv-venv-lock-runner"
+with_dev = true
+commands = [["pyright"]]
+
+[tool.bandit]
+exclude_dirs = ["tests", "conftest.py"]
+
+[tool.bumpversion]
+current_version = "0.1.0"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+tag = true
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+commit = true
+message = "Bump version: {current_version} → {new_version}"
+commit_args = ""
+pre_commit_hooks = ["uv sync", "git add uv.lock"]
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = "## Unreleased"
+replace = "## {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = "v{current_version}...HEAD"
+replace = "v{current_version}...v{new_version}"
+
+

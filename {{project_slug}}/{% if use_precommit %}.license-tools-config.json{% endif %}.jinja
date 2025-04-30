@@ -1,0 +1,23 @@
+{
+  "author": {
+    {% if license != "Proprietary" -%}
+    "from_git": true
+    {%- else -%}
+    "name": {{ rights_owner }}
+    {%- endif %}
+  },
+  {%- if not include_license_text -%}
+  "custom_license": "{% if license != "anticap" %}SPDX-License-Identifier: {{ license }}"{% else %}This software is released under an Anti-Capitalist license. See LICENSE file for details.{% endif %}",
+  {%- else -%}
+  license: "{{ license }}",
+  {%- endif -%}
+  "include": [
+    "**/*.py",
+    "**/*.css",
+    "**/*.js"
+  ],
+  "exclude": [
+    "^\\.[^/]+",
+    "/\\.[^/]+",
+  ]
+}

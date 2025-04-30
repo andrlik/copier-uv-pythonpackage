@@ -38,7 +38,17 @@ package_name:
     type: str
     help: What should we name the module?
     default: "{{ project_name.lower()|replace(' ', '_')|replace('-', '_')}}"
-    
+
+python_versions:
+    type: str
+    help: Which versions of python do you want to support?
+    choices:
+        3.12: "3.12"
+        3.13: "3.13"
+        3.14: "3.14"
+    multiselect: true
+    default: "3.13"
+
 license:
     type: str
     help: What license do you want to release this under?
@@ -66,6 +76,12 @@ use_ga:
     default: false
     validator: "{% if not gh_username and use_ga %}You cannot generate Github Actions without providing a Github username.{% endif %}"
 
+use_taylors_version:
+    type: bool
+    help: Should we add a workflow to name an issue with number 1989 to Taylor's version?
+    default: {% if use_ga %}true{% else %}false{% endif %}
+    validator: "{% if not use_ga and use_taylors_version %}You cannot add this action unless you are using GitHub Actions.{% endif %}"
+
 use_precommit:
     type: bool
     help: Do you want to use pre-commit? (Recommended)
@@ -89,4 +105,4 @@ _jinja_extensions:
 _tasks:
     - "git init"
     - "{% if use_precommit %}pre-commit install{% else %}echo 'Skipping pre-commit step{% endif %}"
-    - "{% if use_just %}just bootstrap{% else %}rye sync{% endif %}"
+    - "just bootstrap"
