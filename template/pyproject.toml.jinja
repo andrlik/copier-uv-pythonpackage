@@ -193,7 +193,7 @@ commands = [["pytest"]]
 [tool.tox.env.lint]
 description = "Run linting via ruff"
 skip_install = true
-allowlist_externals = ["{change_dir}/.tox/{base_python}/bin/python", "{change_dir}/.tox/{base_python}/bin/ruff"]
+allowlist_externals = ["{change_dir}/.tox/{base_python}/bin/python", "ruff"]
 with_dev = true
 runner = "uv-venv-lock-runner"
 commands = [["ruff", "check"]]
