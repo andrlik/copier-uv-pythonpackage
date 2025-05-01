@@ -1,7 +1,7 @@
 site_name: {{ project_name }} Documentation
 site_url: {% if gh_username %}https://{{ gh_username}}.github.io/{{project_slug}}/{% else %}FILL ME IN{% endif %}
 site_author: {{ author_name }}
-copyright: Copyright &copy; {% now 'utc' '%Y' %} {{ author_name }}
+copyright: Copyright &copy; ADD_YEAR_HERE {{ author_name }}
 watch: [mkdocs.yml, README.md, CHANGELOG.md, CODE_OF_CONDUCT.md, SECURITY.md, src/{{ package_name }}]
 nav:
   - Home: index.md

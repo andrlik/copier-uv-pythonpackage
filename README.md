@@ -33,7 +33,7 @@ This copier template creates a new Python package project setup with [uv](https:
 First make sure you have [uv](https://docs.astral.sh/uv) installed on your machine, and then clone this repository.
 
 ```bash
-uvx --with=jinja2-time copier /path/to/cloned/template /target/path/for/project
+uvx copier copy /path/to/cloned/template /target/path/for/project
 ```
 Answer the prompts and your project will be generated, a git repo will be initialized, and your project
 will be bootstrapped with all dependencies installed.
