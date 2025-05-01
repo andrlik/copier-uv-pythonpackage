@@ -9,12 +9,12 @@ author_email:
 rights_owner:
     type: str
     help: What name should we use for relevant rights? For example, if the rights holder is a company, include that here.
-    default: {{ author_name }}
+    default: "{{ author_name }}"
     
 security_email:
     type: str
     help: What email should people use to notify you about security issues?
-    default: {{ author_email }}
+    default: "{{ author_email }}"
     
 gh_username:
     type: str
@@ -63,7 +63,7 @@ license:
         Anti-Capitalist: anticap
         Unlicense/Public Domain: Unlicense
         Decide Later: Undefined
-    default: BSD-3-Clause
+    default: "BSD-3-Clause"
         
 include_coc:
     type: bool
