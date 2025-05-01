@@ -1,3 +1,4 @@
+_subdirectory: template
 author_name:
     type: str
     help: What is your name?
@@ -10,11 +11,11 @@ rights_owner:
     type: str
     help: What name should we use for relevant rights? For example, if the rights holder is a company, include that here.
     default: "{{ author_name }}"
-    
-security_email:
+
+copyright_year:
     type: str
-    help: What email should people use to notify you about security issues?
-    default: "{{ author_email }}"
+    help: "What year should we use for the initial copyright notice?"
+    default: "2025"
     
 gh_username:
     type: str
@@ -22,12 +23,11 @@ gh_username:
 
 project_name: 
     type: str
-    help: What is you project name?
+    help: What is your project name?
     
 project_description:
     type: str
-    help: Provide a short description for the project.
-    multiline: true
+    help: Provide a short one-line description for the project.
     
 project_slug:
     type: str
@@ -79,30 +79,51 @@ use_ga:
 use_taylors_version:
     type: bool
     help: Should we add a workflow to name an issue with number 1989 to Taylor's version?
-    default: true
+    default: false
     validator: "{% if not use_ga and use_taylors_version %}You cannot add this action unless you are using GitHub Actions.{% endif %}"
-
-use_precommit:
-    type: bool
-    help: Do you want to use pre-commit? (Recommended)
-    default: true
     
 include_license_text:
     type: bool
     help: Include additional license text in header of every code file? (Requires precommit.)
     default: false
-    validator: "{% if not use_precommit and include_license_text %}We cannot automatically add license text to each file without precommit.{% endif %}{% if license in ['Undefined', 'Anti-Capitalist'] %}Your selected license is not compatible for license text insertion in code files.{% endif %}"
+    validator: "{% if license in ['Undefined', 'Anti-Capitalist'] %}Your selected license is not compatible for license text insertion in code files.{% endif %}"
 
 use_coveralls:
     type: bool
     help: Do you want to use coveralls? (Requires Github Actions)
     default: false
     validator: "{% if not use_ga and use_coveralls %}Configuring coveralls outside of Github Actions is not supported.{% endif %}"
-    
-_jinja_extensions:
-    - jinja2_time.TimeExtension
 
-_tasks:
-    - "git init"
-    - "{% if use_precommit %}pre-commit install{% else %}echo 'Skipping pre-commit step{% endif %}"
-    - "just bootstrap"
+_message_after_copy: |
+    You project {{ project_name }} has been created successfully!
+    
+    Next steps:
+    
+    1. Change directory to your project root:
+        
+        cd {{ _copier_conf.dst_path }}
+    
+    2. Initialize your git repository.
+        
+        git init
+    
+    3. If you aren't using GitHub Pages for your documentation, update the site_url field in mkdocs.yml.
+    
+    4. Bootstrap your environment.
+        
+        just bootstrap
+    
+    5. Do your first commit
+        
+        git add .
+        git commit -m ":tada: Initial commit"
+    
+    6. Read the generated CONTRIBUTING.md file for info on how to use your new environment.
+    
+    7. GitHub setup (optional)
+
+        a. Create your repository and add it as a remote. 
+        b. Turn on private vulnerability reporting as described here: https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/configuring-private-vulnerability-reporting-for-a-repository
+        c. If you plan on publishing to PyPI via the supplied GitHub action, you should add a repository secret available for GitHub Actions called PYPI_TOKEN. Otherwise, delete the publish.yml action.
+             Use a PROJECT SCOPED access token. NEVER use a global account access token for this value!
+        d. If using Coveralls, you will need to enable the repository link for your account via the coveralls management dashboard: https://coveralls.io

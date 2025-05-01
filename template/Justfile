@@ -48,7 +48,6 @@ _check-pre-commit:
 bootstrap: uv-install _install-pre-commit
     #!/usr/bin/env bash
     uv sync
-    DJANGO_SETTINGS_MODULE="tests.settings" PYTHONPATH="$PYTHONPATH:$(pwd)" uv run django-admin migrate
 
 # Checks that project is ready for development.
 check: _check-pre-commit
@@ -73,7 +72,7 @@ fmt: check
 
 # Run ruff linting
 lint *ARGS: check
-    uv run ruff check {{ ARGS }} src
+    uv run ruff check {{ ARGS }}
 
 # Run the test suite
 test *ARGS: check

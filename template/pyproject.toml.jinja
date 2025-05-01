@@ -1,17 +1,17 @@
 [project]
-name = "{{ project-slug }}"
+name = "{{ project_slug }}"
 version = "0.1.0"
 description = """{{ project_description }}"""
 authors = [{ name = "{{ author_name }}", email = "{{ author_email }}" }]
-{% if license not in ["anticap", "Undefined"] -%}license = "{{ license }}"{% endif -%}
+{% if license not in ["anticap", "Undefined"] %}license = "{{ license }}"{% endif %}
 readme = "README.md"
-requires-python = ">={% if '3.12' in python_versions %}3.12{% else %}3.13"
+requires-python = ">={% if '3.12' in python_versions %}3.12{% else %}3.13{% endif %}"
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
-    {% if license and license != "anticap" and license != "Undefined" -%}"License :: {% if license == 'Proprietary' %}Other/Proprietary License{% else %}OSI Approved :: {% if license == 'BSD-3-Clause' %}BSD License{% elif license == 'MIT' %}MIT License{% elif license == 'Apache-2.0' %}Apache Software License{% elif license == 'Unlicense' %}The Unlicense (Unlicense){% elif license == 'GPL-3.0-or-later' %}GNU Lesser General Public License v3 or later (LGPLv3+){% elif license == 'LGPL-3.0-or-later' %}GNU Lesser General Public License v2 or later (LGPLv2+){% elif license == 'AGPL-3.0-or-later' %}GNU Affero General Public License v3 or later (AGPLv3+){% endif %}",{% endif %}
+    {% if license and license != "anticap" and license != "Undefined" -%}"License :: {% if license == 'Proprietary' %}Other/Proprietary License{% else %}OSI Approved :: {% if license == 'BSD-3-Clause' %}BSD License{% elif license == 'MIT' %}MIT License{% elif license == 'Apache-2.0' %}Apache Software License{% elif license == 'Unlicense' %}The Unlicense (Unlicense){% elif license == 'GPL-3.0-or-later' %}GNU Lesser General Public License v3 or later (LGPLv3+){% elif license == 'LGPL-3.0-or-later' %}GNU Lesser General Public License v2 or later (LGPLv2+){% elif license == 'AGPL-3.0-or-later' %}GNU Affero General Public License v3 or later (AGPLv3+){% endif %}{% endif %}",{% endif %}
     {% if python_versions -%}{% for version in python_versions -%}
     "Programming Language :: Python :: {{ version }}",
-    {% endfor %}
+    {% endfor %}{% endif %}
 ]
 {% if gh_username -%}
 [project.urls]
@@ -62,11 +62,13 @@ addopts = [
       "--doctest-continue-on-failure",
       "--cov=src/{{package_name}}",
       "--cov-report=term-missing",
+      "--cov-branch",
 ]
 
 [tool.coverage.run]
 source = ["src/{{package_name}}"]
 omit = ["*tests*"]
+parallel = true
 
 [tool.coverage.report]
 exclude_lines = [
@@ -179,7 +181,7 @@ exclude = [
 # reportIncompatibleMethodOverride = false
 
 [tool.tox]
-env_list = [{% for version in python_versions %}"{{ version }}", {% endfor %} "lint", "types"]
+env_list = [{% for version in python_versions %}"{{ version }}", {% endfor %}"lint", "types"]
 
 [tool.tox.env_run_base]
 description = "Run tests under {base_python}"
@@ -191,7 +193,7 @@ commands = [["pytest"]]
 [tool.tox.env.lint]
 description = "Run linting via ruff"
 skip_install = true
-allowlist_externals = ["{change_dir}/.tox/{base_python}/bin/python"]
+allowlist_externals = ["{change_dir}/.tox/{base_python}/bin/python", "{change_dir}/.tox/{base_python}/bin/ruff"]
 with_dev = true
 runner = "uv-venv-lock-runner"
 commands = [["ruff", "check"]]
@@ -221,7 +223,7 @@ tag_message = "Bump version: {current_version} → {new_version}"
 allow_dirty = false
 commit = true
 message = "Bump version: {current_version} → {new_version}"
-commit_args = ""
+commit_args = "-n"
 pre_commit_hooks = ["uv sync", "git add uv.lock"]
 
 [[tool.bumpversion.files]]

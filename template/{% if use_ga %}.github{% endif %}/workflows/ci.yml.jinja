@@ -71,7 +71,7 @@ jobs:
     - name: Submit coverage data to coveralls.io
       uses: coverallsapp/github-action@master
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ "{{" }} secrets.GITHUB_TOKEN {{ "}}" }}
         path-to-lcov: "coverage.lcov"
     {%- endif %}
 
