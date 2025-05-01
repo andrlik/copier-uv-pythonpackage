@@ -2,6 +2,8 @@
 
 This copier template creates a new Python package project setup with [uv](https://docs.astral.sh/uv), along with extra bells and whistles.
 
+This is a work in progress, and at this stage is probably not conducive to anyone's workflow but mine.
+
 - pyproject.toml
   - Includes configuration for all tools that support it
     - pytest
@@ -35,15 +37,5 @@ First make sure you have [uv](https://docs.astral.sh/uv) installed on your machi
 ```bash
 uvx copier copy /path/to/cloned/template /target/path/for/project
 ```
-Answer the prompts and your project will be generated, a git repo will be initialized, and your project
-will be bootstrapped with all dependencies installed.
 
-To complete your setup on Github: 
-- Make sure to [enable security reporting](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/configuring-private-vulnerability-reporting-for-a-repository)
-- If using the publish action, add a repository secret of PYPI_TOKEN with your **project scoped** access token from PyPI. 
-- If using coveralls, make sure to enable the repository in your coveralls account.
-
-!!! warning
-    
-    **NEVER** use a global access token in your release workflow.
-
+Your project will be created and follow-up instructions will be printed to the terminal.

@@ -45,7 +45,6 @@ python_versions:
     choices:
         3.12: "3.12"
         3.13: "3.13"
-        3.14: "3.14"
     multiselect: true
     default: "3.13"
 
@@ -84,7 +83,7 @@ use_taylors_version:
     
 include_license_text:
     type: bool
-    help: Include additional license text in header of every code file? (Requires precommit.)
+    help: Include full license text in header of every code file? (Requires precommit.)
     default: false
     validator: "{% if license in ['Undefined', 'Anti-Capitalist'] %}Your selected license is not compatible for license text insertion in code files.{% endif %}"
 
