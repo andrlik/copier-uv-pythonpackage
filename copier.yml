@@ -79,7 +79,7 @@ use_ga:
 use_taylors_version:
     type: bool
     help: Should we add a workflow to name an issue with number 1989 to Taylor's version?
-    default: {% if use_ga %}true{% else %}false{% endif %}
+    default: true
     validator: "{% if not use_ga and use_taylors_version %}You cannot add this action unless you are using GitHub Actions.{% endif %}"
 
 use_precommit:
