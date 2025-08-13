@@ -1,5 +1,7 @@
 # copier-uv-pythonpackage
 
+**This repository has been [moved to Codeberg](https://codeberg.org/andrlik/copier-uv-pythonpackage) as of 2025-08-13.**
+
 This copier template creates a new Python package project setup with [uv](https://docs.astral.sh/uv), along with extra bells and whistles.
 
 This is a work in progress, and at this stage is probably not conducive to anyone's workflow but mine.
